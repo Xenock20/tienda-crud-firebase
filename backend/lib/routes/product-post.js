@@ -38,7 +38,7 @@ async function uploadImageProduct(req, res, next) {
 
         next();
     } catch (error) {
-        logger.error(error);
+        logger.error(`POST updateImageProduct error: ${error}`);
         res.status(500).json({ error: "Error uploading image" });
     }
 }
@@ -62,7 +62,7 @@ async function saveProduct(req, res) {
             productData,
         });
     } catch (error) {
-        logger.error(error);
+        logger.error(`POST saveProduct error: ${error}`);
         res.status(500).json({ error: "Error saving product" });
     }
 }

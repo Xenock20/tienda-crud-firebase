@@ -16,7 +16,7 @@ async function getProducts(req, res) {
 
         res.status(200).json(productsList);
     } catch (error) {
-        logger.error(error);
+        logger.error(`GET getProducts error: ${error}`);
         res.status(500).json({ error: "Error fetching products" });
     }
 }
@@ -36,7 +36,7 @@ async function getProduct(req, res) {
             ...productDoc.data(),
         });
     } catch (error) {
-        logger.error(error);
+        logger.error(`GET getProduct error: ${error}`);
         res.status(500).json({ error: "Error fetching product" });
     }
 }

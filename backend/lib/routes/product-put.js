@@ -61,7 +61,7 @@ async function handleImageUpdate(req, res, next) {
 
         next();
     } catch (error) {
-        logger.error(error);
+        logger.error(`PUT handleImageUpdate error: ${error}`);
         res.status(500).json({ error: "Error handling image update" });
     }
 }
@@ -86,7 +86,7 @@ async function updateProduct(req, res) {
             updatedProductData,
         });
     } catch (error) {
-        logger.error(error);
+        logger.error(`PUT updateProduct error: ${error}`);
         res.status(500).json({ error: "Error updating product" });
     }
 }

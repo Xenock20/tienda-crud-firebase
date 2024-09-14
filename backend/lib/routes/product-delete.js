@@ -24,7 +24,7 @@ async function deleteProductImage(productData) {
             await deleteObject(imageRef); // Eliminar la imagen del almacenamiento
         }
     } catch (error) {
-        logger.error(`Error deleting product image: ${error}`);
+        logger.error(`DELETE deleteProductImage error: ${error}`);
         throw new Error("Error deleting product image");
     }
 }
@@ -55,7 +55,7 @@ async function deleteProduct(req, res) {
             productId,
         });
     } catch (error) {
-        logger.error(error);
+        logger.error(`DELETE deleteProduct error: ${error}`);
         res.status(500).json({ error: "Error deleting product" });
     }
 }
