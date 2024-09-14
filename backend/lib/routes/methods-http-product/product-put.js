@@ -8,8 +8,8 @@ const {
     getDownloadURL,
 } = require("firebase/storage");
 const multer = require("multer");
-const { db, storage } = require("../config/firebase.config");
-const logger = require("../logger");
+const { db, storage } = require("../../config/firebase.config");
+const logger = require("../../logger");
 
 // Configuración de multer para subir archivos a Firebase Storage
 const upload = multer({ storage: multer.memoryStorage() });

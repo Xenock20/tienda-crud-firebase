@@ -3,8 +3,8 @@ const router = require("express").Router();
 const { addDoc, collection } = require("firebase/firestore");
 const { ref, uploadBytes, getDownloadURL } = require("firebase/storage");
 const multer = require("multer");
-const { db, storage } = require("../config/firebase.config"); // Firebase Firestore y Storage
-const logger = require("../logger");
+const { db, storage } = require("../../config/firebase.config"); // Firebase Firestore y Storage
+const logger = require("../../logger");
 
 // Configuración de multer para subir archivos a Firebase Storage
 const upload = multer({ storage: multer.memoryStorage() });

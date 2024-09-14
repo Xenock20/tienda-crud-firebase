@@ -2,8 +2,8 @@
 const router = require("express").Router();
 const { doc, deleteDoc, getDoc } = require("firebase/firestore");
 const { ref, deleteObject } = require("firebase/storage");
-const { db, storage } = require("../config/firebase.config"); // Firebase Firestore y Storage
-const logger = require("../logger");
+const { db, storage } = require("../../config/firebase.config"); // Firebase Firestore y Storage
+const logger = require("../../logger");
 
 // Validar que el ID del producto esté presente en el body
 function validateProductId(req, res, next) {
