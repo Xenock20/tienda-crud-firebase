@@ -1,10 +1,11 @@
 "use strict";
 const router = require("express").Router();
-const { addDoc, collection } = require("firebase/firestore");
+const {setDoc, doc } = require("firebase/firestore");
 const { ref, uploadBytes, getDownloadURL } = require("firebase/storage");
 const multer = require("multer");
 const { db, storage } = require("../../config/firebase.config"); // Firebase Firestore y Storage
 const logger = require("../../logger");
+const { getNextProductId } = require("../generatorId");
 
 // Configuración de multer para subir archivos a Firebase Storage
 const upload = multer({ storage: multer.memoryStorage() });
@@ -46,19 +47,23 @@ async function uploadImageProduct(req, res, next) {
 // Guardar producto en Firestore y dejar que Firebase genere el ID
 async function saveProduct(req, res) {
     try {
+        // Obtener el siguiente ID secuencial
+        const productId = await getNextProductId();
+
         const productData = {
+            id: productId, // Agregar el ID secuencial
             name: req.body.name,
             description: req.body.description,
             price: parseFloat(req.body.price),
             image: req.body.imageUrl,
         };
 
-        // Añadir el producto a Firestore y dejar que genere el ID automáticamente
-        const docRef = await addDoc(collection(db, "products"), productData);
+        // Añadir el producto a Firestore con el ID secuencial
+        await setDoc(doc(db, "products", productId.toString()), productData);
 
         res.status(201).json({
             message: "Product created successfully",
-            productId: docRef.id, // Firestore genera el ID y lo retornamos
+            productId: productId, // Retornar el ID secuencial
             productData,
         });
     } catch (error) {

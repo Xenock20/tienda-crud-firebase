@@ -1,6 +1,6 @@
 "use strict";
 const router = require("express").Router();
-const { collection, getDoc, query, orderBy, startAfter, limit, getDocs, getCountFromServer } = require('firebase/firestore');
+const { collection, getDoc, query, orderBy, startAfter, limit, getDocs, getCountFromServer, doc } = require('firebase/firestore');
 const { db } = require("../../config/firebase.config"); // Importar la configuración de Firestore
 const logger = require("../../logger");
 
@@ -17,12 +17,12 @@ async function getProducts(req, res) {
         const totalProducts = snapshot.data().count;
 
         // Si existe un "lastVisible", empezar desde ese producto
-        if (lastVisible) {
+        if (lastVisible && lastVisible != 0) {
             const lastVisibleDoc = await getDoc(doc(db, 'products', lastVisible));
-            productsQuery = query(productsRef, orderBy('name'), startAfter(lastVisibleDoc), limit(pageSize));
+            productsQuery = query(productsRef, orderBy('id'), startAfter(lastVisibleDoc), limit(pageSize));
         } else {
             // Si no existe "lastVisible", cargar los primeros productos
-            productsQuery = query(productsRef, orderBy('name'), limit(pageSize));
+            productsQuery = query(productsRef, orderBy('id'), limit(pageSize));
         }
 
         const querySnapshot = await getDocs(productsQuery);
@@ -30,15 +30,25 @@ async function getProducts(req, res) {
         // Crear un array con los productos
         const products = [];
         let lastProduct = null;
-        querySnapshot.forEach((doc) => {
+        let firstProduct = null; // Usado internamente para la lógica de la página anterior
+        
+        querySnapshot.forEach((doc, index) => {
             products.push({ id: doc.id, ...doc.data() });
-            lastProduct = doc; // Guardamos el último documento
+            lastProduct = doc; // Guardamos el último documento de la página actual
+            if(parseInt(lastProduct.id) != 10){
+                firstProduct = doc; // Guardamos el último documento de la página actual
+            } else {
+                firstProduct = 0; // Guardamos el último documento de la página actual
+            }
         });
 
-        // Enviar respuesta con productos paginados y total de productos
+        // Aquí puedes usar `firstProduct` internamente para manejar la lógica de paginación hacia atrás si lo necesitas.
+
+        // Enviar respuesta con productos paginados y total de productos, sin el `firstVisible`
         res.status(200).json({
             products,
-            lastVisible: lastProduct ? lastProduct.id : null, // El ID del último documento
+            nextPage: parseInt(lastProduct.id) != totalProducts ? parseInt(lastProduct.id) : null, // El ID del último documento (para avanzar)
+            returnPage: firstProduct ? (parseInt(firstProduct.id) - products.length) - 10 : null, // El ID del último documento (para avanzar)
             totalProducts // Número total de productos
         });
     } catch (error) {
@@ -46,6 +56,7 @@ async function getProducts(req, res) {
         res.status(500).json({ error: 'Error fetching products' });
     }
 }
+
 
 // Obtener un producto específico por ID
 async function getProduct(req, res) {
