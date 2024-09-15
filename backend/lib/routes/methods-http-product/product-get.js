@@ -1,6 +1,6 @@
 "use strict";
 const router = require("express").Router();
-const { collection, getDocs, query, orderBy, limit, startAfter, getDoc, doc } = require("firebase/firestore");
+const { collection, getDoc, query, orderBy, startAfter, limit, getDocs, getCountFromServer } = require('firebase/firestore');
 const { db } = require("../../config/firebase.config"); // Importar la configuración de Firestore
 const logger = require("../../logger");
 
@@ -11,6 +11,10 @@ async function getProducts(req, res) {
         let productsQuery;
         const pageSize = parseInt(req.query.pageSize) || 10; // Tamaño de página por defecto es 10
         const lastVisible = req.query.lastVisible; // ID del último producto de la página anterior
+
+        // Obtener el número total de productos en la colección
+        const snapshot = await getCountFromServer(productsRef);
+        const totalProducts = snapshot.data().count;
 
         // Si existe un "lastVisible", empezar desde ese producto
         if (lastVisible) {
@@ -31,9 +35,11 @@ async function getProducts(req, res) {
             lastProduct = doc; // Guardamos el último documento
         });
 
+        // Enviar respuesta con productos paginados y total de productos
         res.status(200).json({
             products,
             lastVisible: lastProduct ? lastProduct.id : null, // El ID del último documento
+            totalProducts // Número total de productos
         });
     } catch (error) {
         logger.error(`GET getProducts error: ${error}`);
