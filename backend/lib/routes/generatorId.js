@@ -1,7 +1,6 @@
 const { doc, getDoc, updateDoc, setDoc } = require("firebase/firestore");
 const { db } = require("../config/firebase.config"); // Firebase Firestore y Storage
 
-
 // Función para obtener el siguiente ID secuencial
 async function getNextProductId() {
     const counterRef = doc(db, "counters", "products_counter");
@@ -29,5 +28,5 @@ async function getNextProductId() {
 }
 
 module.exports = {
-  getNextProductId
-}
+    getNextProductId,
+};

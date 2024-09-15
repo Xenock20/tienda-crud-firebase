@@ -1,6 +1,6 @@
 "use strict";
 const router = require("express").Router();
-const {setDoc, doc } = require("firebase/firestore");
+const { setDoc, doc } = require("firebase/firestore");
 const { ref, uploadBytes, getDownloadURL } = require("firebase/storage");
 const multer = require("multer");
 const { db, storage } = require("../../config/firebase.config"); // Firebase Firestore y Storage
@@ -21,6 +21,18 @@ function validateFields(req, res, next) {
     next();
 }
 
+// Obtener un ID único y agregarlo al request
+async function generateProductId(req, res, next) {
+    try {
+        const productId = await getNextProductId();
+        req.body.productId = productId; // Guardar el ID en el request
+        next();
+    } catch (error) {
+        logger.error(`POST generateProductId error: ${error}`);
+        res.status(500).json({ error: "Error generating product ID" });
+    }
+}
+
 // Subir imagen del producto a Firebase Storage
 async function uploadImageProduct(req, res, next) {
     try {
@@ -29,7 +41,9 @@ async function uploadImageProduct(req, res, next) {
         }
 
         const file = req.file;
-        const storageRef = ref(storage, `products/${file.originalname}`);
+        const productId = req.body.productId;
+        const uniqueFileName = `${productId}.${file.originalname.split('.').pop()}`;
+        const storageRef = ref(storage, `products/${uniqueFileName}`);
 
         const snapshot = await uploadBytes(storageRef, file.buffer);
         const downloadURL = await getDownloadURL(snapshot.ref);
@@ -39,31 +53,28 @@ async function uploadImageProduct(req, res, next) {
 
         next();
     } catch (error) {
-        logger.error(`POST updateImageProduct error: ${error}`);
+        logger.error(`POST uploadImageProduct error: ${error}`);
         res.status(500).json({ error: "Error uploading image" });
     }
 }
 
-// Guardar producto en Firestore y dejar que Firebase genere el ID
+// Guardar producto en Firestore
 async function saveProduct(req, res) {
     try {
-        // Obtener el siguiente ID secuencial
-        const productId = await getNextProductId();
-
         const productData = {
-            id: productId, // Agregar el ID secuencial
+            id: req.body.productId, // Usar el ID generado previamente
             name: req.body.name,
             description: req.body.description,
             price: parseFloat(req.body.price),
             image: req.body.imageUrl,
         };
 
-        // Añadir el producto a Firestore con el ID secuencial
-        await setDoc(doc(db, "products", productId.toString()), productData);
+        // Añadir el producto a Firestore con el ID generado
+        await setDoc(doc(db, "products", req.body.productId.toString()), productData);
 
         res.status(201).json({
             message: "Product created successfully",
-            productId: productId, // Retornar el ID secuencial
+            productId: req.body.productId, // Retornar el ID generado
             productData,
         });
     } catch (error) {
@@ -76,6 +87,7 @@ router.post(
     "/product",
     upload.single("image"),
     validateFields,
+    generateProductId,
     uploadImageProduct,
     saveProduct
 );

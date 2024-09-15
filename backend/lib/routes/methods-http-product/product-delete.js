@@ -35,7 +35,7 @@ async function deleteProduct(req, res) {
         const productId = req.body.id;
 
         // Obtener el documento del producto de Firestore
-        const productDocRef = doc(db, "products", productId);
+        const productDocRef = doc(db, "products", productId.toString());
         const productSnapshot = await getDoc(productDocRef);
 
         if (!productSnapshot.exists()) {
