@@ -23,10 +23,6 @@ async function getProducts(req, res) {
             products.push({ id: doc.id, ...doc.data() });
         });
 
-        if(products.length < 10){
-            lastProductId = null;
-        }
-
         // Enviar respuesta con productos paginados y total de productos
         res.status(200).json({
             products,
