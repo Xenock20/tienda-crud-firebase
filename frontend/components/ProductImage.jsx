@@ -9,7 +9,7 @@ export default function ProductImage({ product }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000); // 2 segundos de timeout
+    }, 2000);
 
     // Limpieza en caso de que el componente se desmonte antes de los 2 segundos
     return () => clearTimeout(timer);
