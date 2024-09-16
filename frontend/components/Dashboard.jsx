@@ -1,14 +1,15 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import FooterTable from "@/components/FooterTable";
-import Table from "@/components/Table";
-import HeadTable from "@/components/HeadTable";
+import FooterTable from "@/components/table/FooterTable";
+import Table from "@/components/table/Table";
+import HeadTable from "@/components/table/HeadTable";
 import { getProducts } from "@/app/lib/get-products";
 import Modal from "@/components/Modal";
-import AddProductForm from "@/components/AddProductForm";
-import UpdateProductForm from "@/components/UpdateProductForm";
-import DeleteProductForm from "./DeleteProductForm";
+import AddProductForm from "@/components/forms/AddProductForm";
+import UpdateProductForm from "@/components/forms/UpdateProductForm";
+import DeleteProductForm from "./forms/DeleteProductForm";
+import ProductDetails from "./table/ProductDetails";
 
 export default function Dashboard() {
     const [products, setProducts] = useState([]);
@@ -18,7 +19,8 @@ export default function Dashboard() {
     const [typeForm, setTypeForm] = useState(0);
     const [isModalOpen, setModalOpen] = useState(false);
     const [refresh, setRefresh] = useState(0);
-    const [productToUpdateOrDelete, setProductToUpdateOrDelete] = useState(null);
+    const [productToUpdateOrDelete, setProductToUpdateOrDelete] =
+        useState(null);
 
     const fetchProducts = async () => {
         const data = await getProducts();
@@ -59,6 +61,12 @@ export default function Dashboard() {
         setProductToUpdateOrDelete(product);
     };
 
+    const handleShowProduct = (product) => {
+        setModalOpen(true);
+        setTypeForm(4); // 3 para mostrar producto
+        setProductToUpdateOrDelete(product);
+    };
+
     const handleRefreshOperation = (value) => {
         setRefresh(value);
     };
@@ -81,6 +89,7 @@ export default function Dashboard() {
                 products={paginatedProducts}
                 onEditProduct={handleUpdateProduct}
                 onDeleteProduct={handleDeleteProduct}
+                onShowProduct={handleShowProduct}
             />
             <FooterTable
                 totalProducts={totalProducts}
@@ -103,11 +112,16 @@ export default function Dashboard() {
                             onRefresh={handleRefreshOperation}
                             closeModal={closeModal}
                         />
-                    ) : (
+                    ) : typeForm === 3 ? (
                         <DeleteProductForm
                             product={productToUpdateOrDelete}
                             onRefresh={handleRefreshOperation}
                             closeModal={closeModal}
+                        />
+                    ) : (
+                        <ProductDetails
+                            closeModal={closeModal}
+                            product={productToUpdateOrDelete}
                         />
                     )}
                 </Modal>

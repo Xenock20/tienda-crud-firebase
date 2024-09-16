@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import React from "react";
 import { SlOptions } from "react-icons/sl";
 import { IoIosArrowForward } from "react-icons/io";
+import ProductImage from "../ProductImage";
 
 export default function ItemProduct({
     product,
@@ -12,6 +12,7 @@ export default function ItemProduct({
     setActiveDropdown,
     onEditProduct,
     onDeleteProduct,
+    onShowProduct,
 }) {
     const isMenuOpen = activeDropdown === id;
 
@@ -33,18 +34,15 @@ export default function ItemProduct({
         setActiveDropdown(null); // Cierra el menú después de hacer clic
     };
 
+    const handleShow = () => {
+        onShowProduct(product);
+        setActiveDropdown(null); // Cierra el menú después de hacer clic
+    };
+
     return (
-        <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
+        <tr className="hover:bg-gray-200 border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
             <td className="py-1 px-6">{product.id}</td>
-            <td className="py-1 px-6">
-                <Image
-                    src={product.image}
-                    alt={product.name}
-                    width="43"
-                    height="43"
-                    className="object-contain w-max h-14 my-auto"
-                />
-            </td>
+            <ProductImage product={product}></ProductImage>
             <td className="py-1 px-6">{product.name}</td>
             <td className="py-1 px-6 max-w-xs">
                 <p className="truncate">{product.description}</p>
@@ -65,7 +63,13 @@ export default function ItemProduct({
 
                 {/* Dropdown Menu */}
                 {isMenuOpen && (
-                    <div className="absolute right-3 bottom-3 w-32 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+                    <div className="absolute right-1 -bottom-6 w-20 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+                        <button
+                            onClick={handleShow}
+                            className="block w-full text-left px-4 py-2 text-sm text-gray-700  hover:bg-gray-100"
+                        >
+                            Info
+                        </button>
                         <button
                             onClick={handleEdit}
                             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

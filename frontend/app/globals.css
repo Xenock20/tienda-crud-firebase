@@ -25,3 +25,7 @@ body {
     text-wrap: balance;
   }
 }
+
+.menu{
+  z-index: 1000 !important;
+}

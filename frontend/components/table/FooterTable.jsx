@@ -13,7 +13,7 @@ export default function FooterTable({
     return (
         <div className="flex items-center px-4 py-1 pt-0 mt-4">
             <div className="flex items-center w-full justify-between">
-                <div className="text-xs text-muted-foreground text-gray-500">
+                <div className="text-xs text-muted-foreground text-gray-500 hidden sm:block">
                     Mostrando{" "}
                     <strong>
                         {Math.min(

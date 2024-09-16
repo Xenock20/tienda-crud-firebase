@@ -2,13 +2,14 @@
 
 import React, { useState } from "react";
 
-export default function AddProductForm({ onRefresh, closeModal }) {
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
-    const [price, setPrice] = useState("");
-    const [image, setImage] = useState(null);
-    const [preview, setPreview] = useState("");
+export default function UpdateProductForm({ product, onRefresh, closeModal }) {
+    const [name, setName] = useState(product.name);
+    const [description, setDescription] = useState(product.description);
+    const [price, setPrice] = useState(product.price);
+    const [image, setImage] = useState(product.image);
+    const [id, setId] = useState(product.id);
     const [buttonState, setButtonState] = useState("idle");
+    const [preview, setPreview] = useState(product.image);
 
     const handleFileChange = (event) => {
         const selectedFile = event.target.files[0];
@@ -20,7 +21,7 @@ export default function AddProductForm({ onRefresh, closeModal }) {
             setPreview(filePreview);
         }
     };
-
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -28,6 +29,7 @@ export default function AddProductForm({ onRefresh, closeModal }) {
 
         // Crear un FormData para enviar los datos como multipart/form-data
         const formData = new FormData();
+        formData.append("id", id);
         formData.append("name", name);
         formData.append("description", description);
         formData.append("price", price);
@@ -35,19 +37,19 @@ export default function AddProductForm({ onRefresh, closeModal }) {
 
         try {
             const response = await fetch("http://localhost:3001/api/product", {
-                method: "POST",
+                method: "PUT",
                 body: formData, // Enviamos el FormData
             });
 
             if (response.ok) {
                 setButtonState("success");
 
-                setTimeout(() => {
-                    onRefresh(1);
-                    closeModal();
-                }, 500);
+                setTimeout(()=>{
+                    onRefresh(2)
+                    closeModal()
+                }, 500)
             } else {
-                throw new Error("Error al agregar el producto");
+                throw new Error("Error al actualizando el producto");
             }
         } catch (error) {
             setButtonState("error"); // Cambia el estado del botón a error
@@ -64,7 +66,7 @@ export default function AddProductForm({ onRefresh, closeModal }) {
         <div class="relative flex flex-col bg-white group/design-root overflow-x-hidden">
             <div class="flex items-center bg-white pb-2 justify-center">
                 <h1 class="text-[#111418] text-2xl font-bold leading-tight tracking-[-0.015em] flex-1 text-center py-6">
-                    Agrega Producto
+                    Editar Producto
                 </h1>
             </div>
             <form
@@ -72,6 +74,14 @@ export default function AddProductForm({ onRefresh, closeModal }) {
                 encType="multipart/form-data"
                 className="flex flex-col md:flex-row space-y-6 md:space-y-0 m-auto"
             >
+                <input
+                    type="hidden"
+                    id="id"
+                    name="id"
+                    value={id}
+                    onChange={(e) => setId(e.target.value)}
+                    required
+                />
                 <div class="flex flex-col bg-gray-100 @container p-4 rounded-md">
                     <div class="w-60 h-60 md:w-80 md:h-80 gap-1 overflow-hidden bg-white @[480px]:gap-2 aspect-[3/2] rounded-xl flex m-auto">
                         {preview && (
@@ -86,14 +96,13 @@ export default function AddProductForm({ onRefresh, closeModal }) {
                     </div>
                     <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
                         <label class="flex flex-col min-w-40 flex-1">
-                            <div class="flex w-full flex-1 items-stretch">
+                            <div class="flex w-full flex-1 items-stretch rounded-xl">
                                 <input
                                     type="file"
                                     id="image"
                                     name="image"
                                     accept="image/*"
                                     onChange={handleFileChange}
-                                    required
                                     class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden text-[#111418] focus:outline-0 focus:ring-0 border-none focus:border-none h-14 p-4 rounded-r-none border-r-0 pr-2 text-base font-normal leading-normal"
                                 />
                             </div>
@@ -103,7 +112,7 @@ export default function AddProductForm({ onRefresh, closeModal }) {
                 <div>
                     <div class="flex max-w-[480px] flex-wrap items-end gap-4 px-4 py-3">
                         <label class="flex flex-col min-w-40 flex-1">
-                            <div class="flex w-full flex-1 items-stretch">
+                            <div class="flex w-full flex-1 items-stretchl">
                                 <input
                                     type="text"
                                     id="name"
@@ -111,8 +120,8 @@ export default function AddProductForm({ onRefresh, closeModal }) {
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     required
-                                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f4] focus:border-none h-14 placeholder:text-[#637588] p-4 rounded-r-none border-r-0 pr-2 text-base font-normal leading-normal"
-                                    placeholder="Nombre del producto"
+                                    className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden text-[#111418] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-none bg-[#f0f2f4] h-14 placeholder:text-[#637588] p-4 rounded-r-none pr-2 text-base font-normal leading-normal"
+                                    placeholder="Introduce el nombre del producto"
                                 />
                             </div>
                         </label>
@@ -126,7 +135,7 @@ export default function AddProductForm({ onRefresh, closeModal }) {
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                                 required
-                                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f4] focus:border-none min-h-36 placeholder:text-[#637588] p-4 text-base font-normal leading-normal"
+                                className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden text-[#111418] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-none bg-[#f0f2f4] h-14 placeholder:text-[#637588] p-4 rounded-r-none pr-2 text-base font-normal leading-normal"
                                 placeholder="Descripcion del producto"
                             ></textarea>
                         </label>
@@ -141,7 +150,7 @@ export default function AddProductForm({ onRefresh, closeModal }) {
                                 value={price}
                                 onChange={(e) => setPrice(e.target.value)}
                                 required
-                                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden text-[#111418] focus:outline-0 focus:ring-0 border-none bg-[#f0f2f4] focus:border-none h-14 placeholder:text-[#637588] p-4 text-base font-normal leading-normal"
+                                className="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden text-[#111418] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-none bg-[#f0f2f4] h-14 placeholder:text-[#637588] p-4 rounded-r-none pr-2 text-base font-normal leading-normal"
                                 placeholder="Introduce el precio"
                             />
                         </label>
@@ -156,18 +165,18 @@ export default function AddProductForm({ onRefresh, closeModal }) {
                                     ? "bg-green-500"
                                     : buttonState === "error"
                                     ? "bg-red-500"
-                                    : "bg-blue-500"
+                                    : "bg-blue-500 hover:bg-blue-600"
                             } text-white font-bold py-2 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-150 ease-in-out m-auto w-full`}
                         >
                             {buttonState === "loading"
-                                ? "Agregando..."
+                                ? "Actualizando..."
                                 : buttonState === "success"
-                                ? "Agregado"
+                                ? "Editado"
                                 : buttonState === "error"
                                 ? "Error"
-                                : "Agregar producto"}
+                                : "Editar producto"}
                         </button>
-                        <button type="button" onClick={closeModal} className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-150 ease-in-out m-auto w-full my-2">Cancelar</button>
+                        <button type="button" onClick={closeModal} className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-150 ease-in-out m-auto w-full my-2">Cancelar</button>
                     </div>
                 </div>
             </form>
