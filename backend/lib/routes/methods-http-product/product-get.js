@@ -1,6 +1,6 @@
 "use strict";
 const router = require("express").Router();
-const { collection, getDoc, query, orderBy, startAfter, limit, getDocs, getCountFromServer, doc } = require('firebase/firestore');
+const { collection, getDoc, query, orderBy, getDocs, getCountFromServer, doc } = require('firebase/firestore');
 const { db } = require("../../config/firebase.config"); // Importar la configuración de Firestore
 const logger = require("../../logger");
 

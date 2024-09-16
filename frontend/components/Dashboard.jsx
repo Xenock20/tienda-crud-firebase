@@ -75,7 +75,7 @@ export default function Dashboard() {
     );
 
     return (
-        <>
+        <div>
             <HeadTable onAddProduct={handleAddProduct} />
             <Table
                 products={paginatedProducts}
@@ -91,7 +91,7 @@ export default function Dashboard() {
             />
 
             {isModalOpen && (
-                <Modal onClose={closeModal}>
+                <Modal type={typeForm}>
                     {typeForm === 1 ? (
                         <AddProductForm
                             onRefresh={handleRefreshOperation}
@@ -112,6 +112,6 @@ export default function Dashboard() {
                     )}
                 </Modal>
             )}
-        </>
+        </div>
     );
 }

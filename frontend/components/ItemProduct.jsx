@@ -40,9 +40,9 @@ export default function ItemProduct({
                 <Image
                     src={product.image}
                     alt={product.name}
-                    width="45"
-                    height="45"
-                    className="fixed-image"
+                    width="43"
+                    height="43"
+                    className="object-contain w-max h-14 my-auto"
                 />
             </td>
             <td className="py-1 px-6">{product.name}</td>

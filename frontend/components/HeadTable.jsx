@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
 import React from "react";
+import { FaPlus } from "react-icons/fa";
 
 export default function HeadTable({ onAddProduct }) {
     return (
@@ -15,9 +16,10 @@ export default function HeadTable({ onAddProduct }) {
             </div>
             <button
                 onClick={onAddProduct} // Llamamos a la función para abrir el modal
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded flex justify-center items-center gap-2"
             >
-                Agregar Producto
+                    <FaPlus></FaPlus>
+                    Agregar Producto
             </button>
         </div>
     );
